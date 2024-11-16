@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       await signIn(email, password);
       console.log('Usuario autenticado exitosamente');
-      // Redirigir a CategorieScreen después del login exitoso
+      // Redirigir a CategorieScreen 
       navigation.replace('Categories');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   link: {
     marginTop: 12,
-    color: '#007bff',
+    color: 'white',
     textDecorationLine: 'underline',
   },
 });

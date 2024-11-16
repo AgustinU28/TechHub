@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { auth } from '../db/firebaseConfig';
+import { auth } from '../db/firebaseConfig.jsx';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const RegisterScreen = ({ navigation }) => {

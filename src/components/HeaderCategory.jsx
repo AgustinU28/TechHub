@@ -10,7 +10,7 @@ export default function HeaderCategory({ title, showBackButton = false, rightCom
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <ImageBackground
-            source={require('../img/logodos.png')}
+            source={require('../img/logo.png')}
             style={styles.logo}
             resizeMode="cover"
           >

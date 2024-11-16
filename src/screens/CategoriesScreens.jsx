@@ -3,7 +3,6 @@ import { View, FlatList, StyleSheet } from 'react-native';
 import { getDatabase, ref, get, child } from 'firebase/database';
 import FlatCard from '../components/FlatCard.jsx';
 import HeaderCategory from '../components/HeaderCategory.jsx';
-import LogoutButton from '../components/LogoutButton.jsx';
 
 export default function CategoriesScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
@@ -52,7 +51,6 @@ export default function CategoriesScreen({ navigation }) {
       {/* Header con el botón de cerrar sesión */}
       <HeaderCategory 
         showBackButton={navigation.canGoBack()} 
-        rightComponent={<LogoutButton />} // Aquí se pasa el botón de cerrar sesión
       />
       <FlatList
         data={categories}

@@ -8,6 +8,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const addToCart = useCallback((product) => {
     setCartItems(prevItems => {
@@ -51,16 +52,24 @@ export const CartProvider = ({ children }) => {
   const getTotalPrice = useCallback(() => {
     return cartItems.reduce((total, item) => total + getItemTotal(item), 0);
   }, [cartItems, getItemTotal]);
+  
+  const clearCart = useCallback(() => {
+    setCartItems([]);
+  }, []);
 
   const contextValue = useMemo(() => ({
+    currentUser,
+    setCurrentUser,
     cartItems,
     addToCart,
     removeFromCart,
     incrementQuantity,
     decrementQuantity,
     getItemTotal,
-    getTotalPrice
-  }), [cartItems, addToCart, removeFromCart, incrementQuantity, decrementQuantity, getItemTotal, getTotalPrice]);
+    getTotalPrice,
+    clearCart // Agregamos clearCart al contexto
+  }), [cartItems, addToCart, removeFromCart, incrementQuantity, decrementQuantity, 
+      getItemTotal, getTotalPrice, currentUser, clearCart]);
 
   return (
     <CartContext.Provider value={contextValue}>

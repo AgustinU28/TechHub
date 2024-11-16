@@ -1,37 +1,97 @@
 import React, { useCallback } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Image, Text } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet, Image, Text, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCart } from '../components/CartContext.jsx';
+import { ref, push } from 'firebase/database';
+import { auth, db } from '../db/firebaseConfig';
 
-// Componente de icono de basura personalizado
 const TrashIcon = () => (
   <View style={styles.trashIcon}>
     <View style={styles.trashTop} />
     <View style={styles.trashBottom} />
     <View style={styles.trashLine} />
-    <View style={[styles.trashLine, {top: 6}]} />
-    <View style={[styles.trashLine, {top: 10}]} />
+    <View style={[styles.trashLine, { top: 6 }]} />
+    <View style={[styles.trashLine, { top: 10 }]} />
   </View>
 );
 
 export default function CartScreen() {
-  const { cartItems, removeFromCart, incrementQuantity, decrementQuantity, getTotalPrice } = useCart();
+  const { 
+    cartItems, 
+    removeFromCart, 
+    incrementQuantity, 
+    decrementQuantity, 
+    getTotalPrice,
+    clearCart 
+  } = useCart();
   const navigation = useNavigation();
+
+  const handleFinishPurchase = async () => {
+    try {
+      if (!auth.currentUser) {
+        Alert.alert(
+          "Inicio de sesión requerido",
+          "Por favor, inicia sesión para finalizar la compra",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+
+      if (cartItems.length === 0) {
+        Alert.alert(
+          "Carrito vacío",
+          "Agrega productos antes de finalizar la compra",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+
+      const receipt = {
+        items: cartItems,
+        totalAmount: getTotalPrice(),
+        date: new Date().toISOString(),
+        userId: auth.currentUser.uid
+      };
+
+      // Guardar el recibo en Firebase
+      const receiptRef = ref(db, `receipts/${auth.currentUser.uid}`);
+      await push(receiptRef, receipt);
+
+      // Limpiar el carrito
+      clearCart();
+
+      // Navegar a la pantalla de recibo
+      navigation.navigate('Receipt');
+
+      Alert.alert(
+        "¡Compra exitosa!",
+        "Tu compra ha sido procesada correctamente",
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      console.error('Error al finalizar la compra:', error);
+      Alert.alert(
+        "Error",
+        "Hubo un error al procesar tu compra. Por favor, intenta de nuevo.",
+        [{ text: "OK" }]
+      );
+    }
+  };
 
   const renderItem = useCallback(({ item }) => {
     if (!item || typeof item !== 'object') {
       console.error('Invalid item in cart:', item);
       return null;
     }
-  
+
     const stockColor = item.stock > 0 ? 'green' : 'red';
     const itemTotal = item.price * item.quantity;
 
     return (
       <View style={styles.itemContainer}>
         {item.mainImage && (
-          <Image 
-            source={{ uri: item.mainImage }} 
+          <Image
+            source={{ uri: item.mainImage }}
             style={styles.itemImage}
             resizeMode="contain"
           />
@@ -76,6 +136,9 @@ export default function CartScreen() {
               Total del Carrito: ${getTotalPrice().toLocaleString()}
             </Text>
           </View>
+          <TouchableOpacity onPress={handleFinishPurchase} style={styles.finishButton}>
+            <Text style={styles.finishButtonText}>Finalizar Compra</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <Text style={styles.emptyText}>Tu carrito está vacío.</Text>
@@ -85,52 +148,90 @@ export default function CartScreen() {
 }
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f9f9f9',
+  finishButton: {
+    backgroundColor: '#28a745',
     padding: 16,
-    marginBottom: 8,
-    borderRadius: 8,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
-  itemImage: {
-    width: '30%',
-    height: 80,
-    marginRight: 16,
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  itemTitle: {
+  finishButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  itemPrice: {
-    fontSize: 16,
+  totalContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    alignItems: 'center',
+  },
+  totalText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
     color: '#888',
-  },
-  productStock: {
     fontSize: 16,
-    marginBottom: 8,
+    marginTop: 16,
   },
-  itemQuantity: {
-    fontSize: 16,
-    marginBottom: 8,
+  itemContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
-  itemTotal: {
+  itemImage: {
+    width: 80,
+    height: 80,
+    marginRight: 16,
+    borderRadius: 8,
+  },
+  itemDetails: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  itemTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 8,
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: '#555',
+  },
+  productStock: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  itemQuantity: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  itemTotal: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 4,
   },
   quantityControls: {
     flexDirection: 'row',
@@ -140,36 +241,20 @@ const styles = StyleSheet.create({
   controlButton: {
     backgroundColor: '#ddd',
     padding: 8,
-    borderRadius: 4,
+    borderRadius: 5,
+    marginHorizontal: 10,
   },
   controlButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
   },
   quantityText: {
-    marginHorizontal: 16,
     fontSize: 16,
   },
   removeButton: {
     marginTop: 8,
-    alignSelf: 'flex-start',
-  },
-  totalContainer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#888',
-    fontSize: 16,
-    marginTop: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   trashIcon: {
     width: 20,

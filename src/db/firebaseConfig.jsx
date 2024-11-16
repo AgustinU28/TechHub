@@ -1,25 +1,41 @@
-import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { getDatabase } from 'firebase/database';  // Solo importamos getDatabase
+import { initializeApp, getApps } from 'firebase/app';
+import { 
+  getAuth, 
+  initializeAuth,
+  getReactNativePersistence 
+} from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCBL_klK_Tm8VuDJR9UbbE1rWAWqGCdxOU",
   authDomain: "techhub-e1d6c.firebaseapp.com",
   databaseURL: "https://techhub-e1d6c-default-rtdb.firebaseio.com/",
+  projectId: "techhub-e1d6c",
+  storageBucket: "techhub-e1d6c.appspot.com",
+  messagingSenderId: "640860647955",
+  appId: "1:640860647955:web:f3586812d4628d8a34c5e6"
 };
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
+// Inicializar Firebase App solo si no está inicializado
+let app;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
 
-// Inicializar autenticación con persistencia
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
-});
+// Inicializar Auth con persistencia solo si no está inicializado
+let auth;
+try {
+  auth = getAuth(app);
+} catch (error) {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+}
 
-// Inicializar base de datos
-const database = getDatabase(app);  // Solo exportamos la instancia de la base de datos
+// Inicializar Database
+const db = getDatabase(app);
 
-// Exportar las instancias necesarias
-export { auth, database };
+export { auth, db };

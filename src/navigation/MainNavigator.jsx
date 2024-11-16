@@ -1,13 +1,16 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
+import LoginScreen from '../screens/LoginScreen.jsx';
+import RegisterScreen from '../screens/RegisterScreen.jsx';
 import CategoriesScreen from '../screens/CategoriesScreens.jsx'; 
 import ProductsScreen from '../screens/ProductsScreens.jsx'; 
 import ProductDetailsScreen from '../screens/ProductDetailsScreen.jsx';
-import TabNavigator from './TabNavigator'; 
-import CartScreen from '../screens/CartScreen';  
-import SearchScreen from '../screens/SearchScreen';  // Importa tu SearchScreen
+import TabNavigator from './TabNavigator.jsx'; 
+import CartScreen from '../screens/CartScreen.jsx';  
+import SearchScreen from '../screens/SearchScreen.jsx';  
+import ProfileScreen from '../screens/ProfileScreen.jsx';
+import CameraScreen from '../screens/CameraScreen.jsx';
+import ReceiptScreen from '../screens/ReceiptScreen.jsx';  
 
 const Stack = createStackNavigator();
 
@@ -28,43 +31,61 @@ const MainNavigator = () => {
         options={{ title: 'Registrarse' }}
       />
 
-    
+      {/* Esto asegura que TabNavigator sea la primera pantalla que se muestre */}
+  <Stack.Screen
+    name="Categories"
+    component={CategoriesScreen}
+    options={{ headerShown: false }}
+  />
 
-      {/* Pantalla de categorías que redirige al TabNavigator */}
-      <Stack.Screen
-        name="Categories"
-        component={CategoriesScreen}
-        options={{ title: 'Categorías' }}  // Título para la pantalla de categorías
-      />
-
-      {/* Esta es la pantalla de TabNavigator que será visible después de CategoriesScreen */}
-      <Stack.Screen
-        name="TabNavigator"  // Renombramos la pantalla a TabNavigator
-        component={TabNavigator}
-        options={{ headerShown: false }}  // Esconde el header en TabNavigator
-      />
-
+  {/* TabNavigator se muestra directamente después de Categories */}
+  <Stack.Screen
+    name="TabNavigator"
+    component={TabNavigator}
+    options={{ headerShown: false }}
+  />
       {/* Pantalla de búsqueda */}
       <Stack.Screen
         name="Search"
-        component={SearchScreen}  // Pantalla de búsqueda
-        options={{ title: 'Buscar Productos' }}  // Título de la pantalla de búsqueda
+        component={SearchScreen}
+        options={{ title: 'Buscar Productos' }}
       />
 
       {/* Pantalla de detalles del producto */}
       <Stack.Screen
         name="ProductDetails"
-        component={ProductDetailsScreen} // Pantalla de detalles de productos
+        component={ProductDetailsScreen}
         options={{ title: 'Detalles del Producto' }}
       />
 
       {/* Pantalla de carrito */}
       <Stack.Screen
         name="Cart"
-        component={CartScreen}  // Pantalla de carrito
+        component={CartScreen}
         options={{ title: 'Carrito' }}
       />
-      
+
+      {/* Pantalla de Perfil */}
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: 'Perfil' }}
+      />
+
+      {/* Pantalla de Cámara */}
+      <Stack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{ title: 'Cámara' }}
+      />
+
+      {/* Pantalla de Receipt */}
+      <Stack.Screen
+        name="Receipt"
+        component={ReceiptScreen}
+        options={{ title: 'Recibo' }}  // Cambia el título si es necesario
+      />
+
       {/* Pantalla de productos */}
       <Stack.Screen
         name="Products"

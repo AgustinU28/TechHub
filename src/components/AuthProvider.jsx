@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { auth } from '../db/firebaseConfig'; 
+import { auth } from '../db/firebaseConfig.jsx';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export const AuthContext = createContext(null);
@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
     });
-
     return unsubscribe;
   }, []);
 
@@ -23,8 +22,13 @@ export const AuthProvider = ({ children }) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  const signOutUser = () => {
-    return signOut(auth);
+  const signOutUser = async () => {
+    try {
+      await signOut(auth);
+      console.log('Usuario ha cerrado sesión');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   };
 
   return (
