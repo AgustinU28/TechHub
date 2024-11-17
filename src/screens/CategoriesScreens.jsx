@@ -35,10 +35,7 @@ export default function CategoriesScreen({ navigation }) {
       title={item.title}
       image={item.image}
       onPress={() => {
-        // Después de seleccionar una categoría, redirige al TabNavigator
-        navigation.replace('TabNavigator');
-        // También puedes pasarle los datos de la categoría a la siguiente pantalla si es necesario
-        navigation.navigate('Products', { 
+           navigation.navigate('Products', { 
           categoryId: item.id, 
           categoryTitle: item.title 
         });

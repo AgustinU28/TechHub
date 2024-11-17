@@ -17,7 +17,7 @@ const firebaseConfig = {
   appId: "1:640860647955:web:f3586812d4628d8a34c5e6"
 };
 
-// Inicializar Firebase App solo si no está inicializado
+// Inicializar Firebase App
 let app;
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
@@ -25,14 +25,14 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-// Inicializar Auth con persistencia solo si no está inicializado
+// Inicializar Auth con persistencia
 let auth;
-try {
-  auth = getAuth(app);
-} catch (error) {
+if (getApps().length === 0) {
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
   });
+} else {
+  auth = getAuth(app);
 }
 
 // Inicializar Database

@@ -21,7 +21,7 @@ const LoginScreen = ({ navigation }) => {
       await signIn(email, password);
       console.log('Usuario autenticado exitosamente');
       // Redirigir a CategorieScreen 
-      navigation.replace('Categories');
+      navigation.replace('TabNavigator');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       setError(error.message || 'Error al iniciar sesión');
