@@ -6,6 +6,7 @@ import ProductsScreen from '../screens/ProductsScreens.jsx';
 import ProductDetailsScreen from '../screens/ProductDetailsScreen.jsx';
 import TabNavigator from './TabNavigator.jsx'; 
 import SearchScreen from '../screens/SearchScreen.jsx';  
+import LocationScreen from '../screens/LocationScreen';
 
 const Stack = createStackNavigator();
 
@@ -39,7 +40,11 @@ const MainNavigator = () => {
         component={SearchScreen}
         options={{ title: 'Buscar Productos' }}
       />
-
+      <Stack.Screen
+  name="Location"
+  component={LocationScreen}
+  options={{ title: 'Mi Ubicación' }}
+/>
       <Stack.Screen
         name="ProductDetails"
         component={ProductDetailsScreen}

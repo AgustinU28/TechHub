@@ -7,6 +7,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import CameraScreen from '../screens/CameraScreen';
 import ReceiptScreen from '../screens/ReceiptScreen';
 import { AuthContext } from '../components/AuthProvider';
+import LocationScreen from '../screens/LocationScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -51,6 +52,18 @@ const TabNavigator = () => {
           <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: 'Perfil' }} />
           <Tab.Screen name="Camera" component={CameraScreen} options={{ tabBarLabel: 'Cámara' }} />
           <Tab.Screen name="Receipt" component={ReceiptScreen} options={{ tabBarLabel: 'Recibo' }} />
+          <Tab.Screen 
+  name="Location" 
+  component={LocationScreen} 
+  options={{ 
+    tabBarLabel: 'Ubicación',
+    tabBarIcon: ({ focused, color, size }) => {
+      const iconName = focused ? 'location' : 'location-outline';
+      return <Ionicons name={iconName} size={size} color={color} />;
+    }
+  }} 
+/>
+          
         </>
       )}
     </Tab.Navigator>
