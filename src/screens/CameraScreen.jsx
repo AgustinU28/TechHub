@@ -1,37 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
-import { Camera } from 'expo-camera';  
+import React, { useState } from 'react';
+import { View, Button, Image, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-const CameraScreen = () => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState('back'); 
+export default function CameraScreen() {
+  const [image, setImage] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.getCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  // Solicitar permisos para acceder a la cámara
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    return status === 'granted';
+  };
 
-  if (hasPermission === null) {
-    return <View><Text>Requesting for camera permission...</Text></View>;
-  }
-  if (hasPermission === false) {
-    return <View><Text>No access to camera</Text></View>;
-  }
+  // Función para abrir la cámara y tomar una foto
+  const openCamera = async () => {
+    const permissionGranted = await requestCameraPermission();
+    if (!permissionGranted) {
+      alert('Permission to access camera is required!');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3], // Puedes ajustar el aspecto de la imagen
+      quality: 1, // Calidad de la imagen
+    });
+
+    if (!result.canceled) {
+      setImage(result.uri); // Aquí se almacena la URI de la imagen tomada
+    }
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Camera style={{ flex: 1 }} type={type} />  {/* Usamos el valor 'back' o 'front' directamente */}
-      <Button
-        title="Flip Camera"
-        onPress={() => {
-         
-          setType(type === 'back' ? 'front' : 'back');  
-        }}
-      />
+    <View style={styles.container}>
+      <Button title="Take a Photo" onPress={openCamera} />
+      {image && <Image source={{ uri: image }} style={styles.image} />}
     </View>
   );
-};
+}
 
-export default CameraScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 300,
+    height: 300,
+    marginTop: 20,
+  },
+});

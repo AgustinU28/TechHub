@@ -8,6 +8,7 @@ import TabNavigator from './TabNavigator.jsx';
 import SearchScreen from '../screens/SearchScreen.jsx';  
 import LocationScreen from '../screens/LocationScreen';
 
+
 const Stack = createStackNavigator();
 
 const MainNavigator = () => {
@@ -57,6 +58,7 @@ const MainNavigator = () => {
         options={{ title: 'Productos' }}
       />
     </Stack.Navigator>
+    
   );
 };
 
