@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+# InfoSencible
+.env
+
 # Expo
 .expo/
 dist/

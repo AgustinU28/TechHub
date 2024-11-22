@@ -6,15 +6,24 @@ import {
 } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { 
+  FIREBASE_API_KEY, 
+  FIREBASE_AUTH_DOMAIN, 
+  FIREBASE_DATABASE_URL,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID
+} from '@env';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCBL_klK_Tm8VuDJR9UbbE1rWAWqGCdxOU",
-  authDomain: "techhub-e1d6c.firebaseapp.com",
-  databaseURL: "https://techhub-e1d6c-default-rtdb.firebaseio.com/",
-  projectId: "techhub-e1d6c",
-  storageBucket: "techhub-e1d6c.appspot.com",
-  messagingSenderId: "640860647955",
-  appId: "1:640860647955:web:f3586812d4628d8a34c5e6"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  databaseURL: FIREBASE_DATABASE_URL,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
 };
 
 // Inicializar Firebase App
