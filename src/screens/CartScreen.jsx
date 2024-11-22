@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     color: '#888',
     fontSize: 16,
     marginTop: 16,
+    flex: 1,               
+    justifyContent: 'center', 
+    alignItems: 'center',     
   },
   itemContainer: {
     flexDirection: 'row',
