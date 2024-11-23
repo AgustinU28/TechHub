@@ -89,7 +89,12 @@ El proyecto utiliza Firebase como backend, proporcionando:
 
 ## 📷 Capturas de Pantalla
 
-[Aquí puedes agregar capturas de pantalla de las diferentes secciones de tu app]
+![navegacion](https://github.com/user-attachments/assets/d8e63ece-183f-4e53-be7b-7cfa37bfa844)
+![ubicacion](https://github.com/user-attachments/assets/f40fc490-03e2-4fa8-8a59-a87bac24b7e9)
+![recibos](https://github.com/user-attachments/assets/14186faf-a312-43cc-93da-24c70709f9f7)
+![inicio](https://github.com/user-attachments/assets/1fdd8c3b-4054-4e00-bc51-32d97de93e04)
+![Categorias](https://github.com/user-attachments/assets/f41a9fc8-0bc7-4468-b7b7-2197f1ec0e31)
+
 
 
 
