@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, ActivityIndicator, TextInput, Button } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
-import Config from 'react-native-config';  
+import Config from 'react-native-config';
 
 const LocationScreen = () => {
   const [location, setLocation] = useState(null);
@@ -11,36 +11,62 @@ const LocationScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedLocation, setSearchedLocation] = useState(null);
 
-  const getCurrentLocation = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permiso de ubicación denegado');
-        setErrorMsg('Permiso de ubicación denegado');
-        setLoading(false);
-        return;
-      }
+  useEffect(() => {
+    let locationSubscription;
 
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
+    const startLocationUpdates = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Error', 'Necesitamos permisos de ubicación para continuar');
+          setErrorMsg('Permiso de ubicación denegado');
+          setLoading(false);
+          return;
+        }
 
-      if (currentLocation) {
-        setLocation(currentLocation);
+        const locationEnabled = await Location.hasServicesEnabledAsync();
+        if (!locationEnabled) {
+          Alert.alert('Error', 'Por favor activa el GPS');
+          setErrorMsg('GPS desactivado');
+          setLoading(false);
+          return;
+        }
+
+        locationSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.BestForNavigation,
+            timeInterval: 1000,
+            distanceInterval: 1,
+          },
+          (newLocation) => {
+            console.log('Nueva ubicación:', newLocation);
+            setLocation(newLocation);
+            setLoading(false);
+          }
+        );
+      } catch (err) {
+        console.error("Error detallado:", err);
+        setErrorMsg('Error obteniendo la ubicación: ' + err.message);
         setLoading(false);
       }
-    } catch (err) {
-      console.error("Error obteniendo la ubicación:", err);
-      setErrorMsg('Error obteniendo la ubicación');
-      setLoading(false);
-    }
-  };
+    };
+
+    startLocationUpdates();
+
+    // Limpieza al desmontar el componente
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, []);
 
   const searchLocation = async () => {
     if (searchQuery.trim()) {
       try {
-        // Usa la variable de entorno OPENCAGE_API_KEY
-        const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${searchQuery}&key=${Config.OPENCAGE_API_KEY}`);
+        const response = await fetch(
+          `https://api.opencagedata.com/geocode/v1/json?q=${searchQuery}&key=${Config.OPENCAGE_API_KEY}`
+        );
         const data = await response.json();
         const firstResult = data.results[0];
         if (firstResult) {
@@ -55,10 +81,6 @@ const LocationScreen = () => {
       }
     }
   };
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
 
   if (loading) {
     return (
@@ -85,6 +107,13 @@ const LocationScreen = () => {
         onChangeText={setSearchQuery}
       />
       <Button title="Buscar" onPress={searchLocation} />
+
+      {location && (
+        <Text style={styles.coordsText}>
+          Lat: {location.coords.latitude.toFixed(4)}, 
+          Lon: {location.coords.longitude.toFixed(4)}
+        </Text>
+      )}
       
       {location && (
         <MapView
@@ -92,17 +121,19 @@ const LocationScreen = () => {
           region={{
             latitude: searchedLocation ? searchedLocation.latitude : location.coords.latitude,
             longitude: searchedLocation ? searchedLocation.longitude : location.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
           }}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
         >
           <Marker
             coordinate={{
               latitude: searchedLocation ? searchedLocation.latitude : location.coords.latitude,
               longitude: searchedLocation ? searchedLocation.longitude : location.coords.longitude,
             }}
-            title="Ubicación"
-            description={searchedLocation ? "Ubicación buscada" : "Tu ubicación actual"}
+            title={searchedLocation ? "Ubicación buscada" : "Mi ubicación"}
+            description={searchedLocation ? "Ubicación encontrada" : "Ubicación actual"}
           />
         </MapView>
       )}
@@ -128,6 +159,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     paddingHorizontal: 8,
+  },
+  coordsText: {
+    padding: 10,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    zIndex: 1,
   },
 });
 
